@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>LIBS 894 – Information Retrieval: 150-Q Quiz</title>
+<style>
+ body{font-family:Arial,Helvetica,sans-serif;margin:0;background:#f5f5f5}
+ #card{margin:40px auto;max-width:700px;background:#fff;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.15);padding:30px}
+ .hidden{display:none}
+ .emoji{font-size:3em;text-align:center;margin:10px}
+ .exp{margin-top:15px;font-size:.95em;color:#333}
+ .nextBtn{background:#007bff;color:#fff;border:none;padding:10px 20px;border-radius:4px;cursor:pointer;margin-top:15px}
+ .nextBtn:hover{background:#0056b3}
+ .rightOpt{background:#d4edda;border:1px solid #c3e6cb;border-radius:4px;padding:4px;margin:4px 0}
+</style>
+</head>
+<body>
+<div id="card">
+  <div id="qNum" style="font-weight:bold;margin-bottom:10px"></div>
+  <div id="stem"></div>
+  <div id="opts"></div>
+  <div id="feedback" class="hidden">
+    <div id="emoji" class="emoji"></div>
+    <div id="exp" class="exp"></div>
+    <button class="nextBtn" onclick="nextQ()">Next</button>
+  </div>
+</div>
+
+<script>
+/* ------------ 150 fresh questions drawn from LIBS 894 PDF ------------ */
+const bank = [
+{q:"Which term best describes raw symbols or figures to which meaning can be given?",opts:["Information","Data ✅","Knowledge","Document"],exp:"Data are raw symbols or figures that have potential value or to which meaning can be given."},
+{q:"What is the primary outcome of processing data?",opts:["Storage","Increased volume","Information ✅","Energy"],exp:"Processing data produces information—facts that can influence a person’s response."},
+{q:"Which factor does NOT determine the value of information?",opts:["Accuracy","Relevance","Timeliness","Colour ✅"],exp:"Value is determined by accuracy, relevance, timeliness, source, up-to-datedness and packaging—not colour."},
+{q:"A document is best defined as:",opts:["Any source of information ✅","Only printed books","Only digital files","Only images"],exp:"A document is any source of information—letters, books, photos, tapes, etc."},
+{q:"Which field identifies the creator(s) of a document?",opts:["Title","Author ✅","Edition","ISBN"],exp:"The author is the individual or organisation that created the document."},
+{q:"Information Retrieval (IR) is fundamentally a process of:",opts:["Exact data matching","Searching document sets with queries to satisfy an information need ✅","Storing books on shelves","Programming databases"],exp:"IR searches sets of records/documents using queries to satisfy an information need."},
+{q:"Which component holds the documents and their index terms in an IR system?",opts:["Query subsystem","Evaluation subsystem","Database ✅","Interface"],exp:"The database stores documents and their index-term representations."},
+{q:"Which subsystem allows users to formulate queries?",opts:["Query subsystem ✅","Evaluation subsystem","Database","Matching engine"],exp:"The query subsystem provides a query language for users."},
+{q:"Which subsystem compares queries to documents?",opts:["Evaluation subsystem ✅","Query subsystem","Database","Indexing engine"],exp:"The evaluation subsystem performs the matching/ranking process."},
+{q:"In Boolean logic, the operator AND is used primarily to:",opts:["Increase recall","Increase precision ✅","Exclude terms","Stem words"],exp:"AND narrows the search, improving precision."},
+{q:"In Boolean logic, the operator OR is used primarily to:",opts:["Increase recall ✅","Increase precision","Exclude terms","Truncate words"],exp:"OR broadens the search, improving recall."},
+{q:"Which Boolean operator should be used with caution to avoid losing relevant items?",opts:["AND","OR","NOT ✅","ADJ"],exp:"NOT can inadvertently exclude relevant documents."},
+{q:"Which IR model was proposed by George Boole?",opts:["Vector Space Model","Probabilistic Model","Boolean Model ✅","Fuzzy Model"],exp:"George Boole proposed the Boolean Model in 1950."},
+{q:"A major weakness of the pure Boolean model is that it:",opts:["Is computationally expensive","Does not rank results ✅","Cannot express synonyms","Needs full text"],exp:"Boolean results are unranked; documents are simply relevant or not."},
+{q:"Extended Boolean Model adds which features?",opts:["Probabilistic weighting","Proximity operators & partial matching ✅","Neural networks","Natural-language parsing"],exp:"EBM adds proximity/adjacency operators and partial matching with term weights."},
+{q:"Which model represents documents and queries as vectors in term space?",opts:["Boolean Model","Vector Space Model ✅","Probabilistic Model","Fuzzy Model"],exp:"Vector Space Model uses vectors whose dimensions are index terms."},
+{q:"In the Vector Space Model, similarity is commonly measured by:",opts:["Euclidean distance","Cosine of the angle ✅","Hamming distance","Dice coefficient"],exp:"Cosine similarity measures the angle between query and document vectors."},
+{q:"Which model uses fuzzy set theory to allow partial membership?",opts:["Fuzzy Model ✅","Boolean Model","Vector Space Model","Probabilistic Model"],exp:"Fuzzy Model uses degrees of membership (0–1) for relevance."},
+{q:"The Probabilistic Model ranks documents by:",opts:["Term frequency","Probability of relevance ✅","Vector angles","Citation counts"],exp:"It applies the Probability Ranking Principle—rank by P(relevance|document,query)."},
+{q:"Which model allows queries to be expressed in everyday language?",opts:["Natural Language Model ✅","Boolean Model","Vector Space Model","Fuzzy Model"],exp:"Natural Language Model accepts free-text queries."},
+{q:"A navigational search query is intended to:",opts:["Find a specific website/page ✅","Learn a broad topic","Complete a transaction","Modify data"],exp:"Navigational queries aim to reach a known site or page."},
+{q:"An informational search query is intended to:",opts:["Locate a homepage","Learn about a topic in depth ✅","Buy a product","Delete records"],exp:"Informational queries seek knowledge on a broad topic."},
+{q:"A transactional search query signals intent to:",opts:["Read news","Make a purchase or complete a task ✅","Navigate to a site","Find synonyms"],exp:"Transactional queries include buying, downloading, etc."},
+{q:"Which of the following is NOT a common method of querying?",opts:["Browsing","Adhoc retrieval","Structured query","Day-dreaming ✅"],exp:"Day-dreaming is not a recognised querying method."},
+{q:"Which query structure uses multiple operators and facets?",opts:["Weak structure","Strong structure ✅","Simple structure","Flat structure"],exp:"Strong structures combine several operators (e.g., Boolean, SYN) across facets."},
+{q:"Which factor most influences query formulation?",opts:["Media expertise ✅","Screen brightness","Keyboard colour","Printer speed"],exp:"Media expertise (search skills) heavily shapes how queries are built."},
+{q:"Query expansion typically involves:",opts:["Shrinking the query","Adding synonyms/related terms ✅","Removing all verbs","Using only capital letters"],exp:"Expansion adds synonyms, stems, spelling fixes, etc."},
+{q:"The reference interview is an example of:",opts:["Query negotiation ✅","Database indexing","Citation analysis","Stemming"],exp:"It negotiates the user’s vague need into a precise query."},
+{q:"Which part of the reference interview involves clarifying a vague question?",opts:["Open the interview","Negotiate the question ✅","Search for info","Close the interview"],exp:"Negotiation refines ambiguous or incomplete queries."},
+{q:"Which strategy starts with a known key record and builds outwards?",opts:["Successive Fraction","Building Block","Citation Pearl Growing ✅","Boolean Strategy"],exp:"Citation Pearl Growing seeds from one highly relevant record."},
+{q:"Which strategy works from general to specific by excluding terms?",opts:["Successive Fraction ✅","Citation Pearl","Building Block","Pearl Growing"],exp:"Successive Fraction narrows the set step-by-step."},
+{q:"Which factor affecting online search is hardware-related?",opts:["Response time ✅","Query ambiguity","Synonym choice","Facet analysis"],exp:"Hardware (CPU, RAM, disk) directly affects response time."},
+{q:"Recall is calculated as:",opts:["Relevant retrieved ÷ Total relevant ✅","Relevant retrieved ÷ Total retrieved","Total retrieved ÷ Total relevant","Total relevant ÷ Total retrieved"],exp:"Recall = Relevant retrieved / Total relevant in collection."},
+{q:"Precision is calculated as:",opts:["Relevant retrieved ÷ Total retrieved ✅","Relevant retrieved ÷ Total relevant","Total retrieved ÷ Total relevant","Total relevant ÷ Total retrieved"],exp:"Precision = Relevant retrieved / Total retrieved."},
+{q:"Which metric combines relevance and user judgement?",opts:["Topical relevance","Situational relevance ✅","Vector distance","Cosine score"],exp:"Situational relevance considers the user’s specific context and need."},
+{q:"Which metadata type describes intellectual property rights?",opts:["Descriptive metadata","Structural metadata","Rights management metadata ✅","Preservation metadata"],exp:"Rights management metadata handles IP and licensing."},
+{q:"Which standard is used for encoding archival finding aids?",opts:["MARC","EAD ✅","MODS","ONIX"],exp:"EAD (Encoded Archival Description) is the XML standard for archives."},
+{q:"Dublin Core is primarily:",opts:["A library classification scheme","A simple metadata standard for networked resources ✅","A multimedia descriptor set","A thesaurus"],exp:"Dublin Core provides 15 elements for describing online resources."},
+{q:"Which metadata tool automatically generates metadata from content?",opts:["Template","Extraction tool ✅","Mark-up tool","Conversion tool"],exp:"Extraction tools analyse text to auto-create metadata (requiring later review)."},
+{q:"Which principle states good metadata should support interoperability?",opts:["Principle 2 ✅","Principle 4","Principle 6","Principle 1"],exp:"NISO lists six principles; #2 is interoperability."},
+{q:"Stop words are typically removed because they:",opts:["Are misspelled","Have low semantic value ✅","Increase precision","Contain numbers"],exp:"Stop words (the, of, and…) carry little meaning and dilute results."},
+{q:"Stemming reduces words to their:",opts:["Synonyms","Antonyms","Root/stem form ✅","Acronyms"],exp:"Stemming groups variants like walk, walking, walked under ‘walk’."},
+{q:"TF-IDF weighting increases the weight of terms that are:",opts:["Frequent everywhere","Rare in collection but frequent in document ✅","Longest","Oldest"],exp:"TF-IDF boosts distinctive terms (high TF, low DF)."},
+{q:"Which measure reflects the system’s ability to reject irrelevant documents?",opts:["Recall","Precision ✅","Fallout","Noise"],exp:"Precision gauges exactness—how many retrieved docs are relevant."},
+{q:"Which of the following is NOT a metadata standard?",opts:["Dublin Core","ONIX","DOI","Google ✅"],exp:"Google is a search engine, not a metadata standard."},
+{q:"Which metadata type tells how compound objects are organised?",opts:["Descriptive","Structural ✅","Administrative","Preservation"],exp:"Structural metadata shows page order, chapters, etc."},
+{q:"Which search tip is recommended when you retrieve too few results?",opts:["Add synonyms or drop terms ✅","Use NOT more often","Use shorter queries","Add more databases"],exp:"Few results → broaden query (synonyms, fewer terms)."},
+{q:"Which search tip is recommended when you retrieve too many irrelevant results?",opts:["Add more AND concepts ✅","Add ORs","Use stemming","Use truncation"],exp:"Too many hits → narrow by adding AND concepts or phrases."},
+{q:"In evaluation, ‘effort’ refers to:",opts:["CPU cycles","User labour in examining results ✅","Database size","Network latency"],exp:"Effort captures the user’s time/energy spent interacting with results."},
+{q:"Which of the following is a controlled indexing language?",opts:["Natural language","Thesaurus-based terms ✅","Free text","Social tags"],exp:"A thesaurus supplies controlled terms to maintain consistency."},
+{q:"Which metadata principle stresses persistence and unique identification?",opts:["Principle 1","Principle 3","Principle 5 ✅","Principle 6"],exp:"Principle 5 says metadata records themselves must be archivable, persistent, uniquely identifiable."},
+{q:"Which factor is LEAST likely to affect online search performance?",opts:["Indexing language","User expertise","Room temperature ✅","System response time"],exp:"Room temperature is an environmental comfort issue, not a search-performance factor."},
+{q:"Which search strategy uses Boolean operators to combine key concepts from the start?",opts:["Building Block","Boolean Model strategy ✅","Successive Fraction","Pearl Growing"],exp:"The Boolean Model strategy begins with a fully structured Boolean query."},
+{q:"Which metadata creation tool provides pre-set field templates?",opts:["Template ✅","Extraction tool","Mark-up tool","Conversion tool"],exp:"Templates present fields for manual entry, then format the output."},
+{q:"Which metadata standard is designed for learning objects?",opts:["IEEE LOM ✅","MODS","ONIX","EAD"],exp:"IEEE LOM (Learning Object Metadata) is tailored for educational resources."},
+{q:"Which of the following best defines relevance feedback?",opts:["User rates results → system refines query ✅","System logs keystrokes","Stemming algorithm","Spell-check function"],exp:"Relevance feedback uses user judgments to reformulate queries automatically."},
+{q:"Which IR model is most computationally expensive?",opts:["Boolean Model","Vector Space Model ✅","Simple string match","Exact keyword"],exp:"Vector Space Model requires high-dimensional cosine calculations across large collections."},
+{q:"Which metadata standard is used for describing artworks?",opts:["CDWA ✅","Darwin Core","Dublin Core","MARC"],exp:"CDWA (Categories for the Description of Works of Art) focuses on art and material culture."},
+{q:"Which evaluation metric is user-oriented?",opts:["Recall","Precision","User satisfaction ✅","Indexing time"],exp:"User satisfaction captures subjective success; recall & precision are system metrics."},
+{q:"Which query type is used to append query results to an existing table?",opts:["Make-table query","Update query","Append query ✅","Delete query"],exp:"Append query adds result sets to an existing table."},
+{q:"Which query type creates a new table from query results?",opts:["Make-table query ✅","Update query","Append query","Delete query"],exp:"Make-table query generates a fresh table containing the result set."},
+{q:"Which query type modifies existing records?",opts:["Update query ✅","Append query","Delete query","Select query"],exp:"Update query alters existing data based on criteria."},
+{q:"Which query type removes records from a table?",opts:["Delete query ✅","Update query","Append query","Select query"],exp:"Delete query eliminates records meeting specified conditions."},
+{q:"Which metadata element is unique to serial publications?",opts:["ISBN","ISSN ✅","DOI","URI"],exp:"ISSN (International Standard Serial Number) identifies serials like journals."},
+{q:"Which metadata element is unique to books?",opts:["ISBN ✅","ISSN","DOI","URI"],exp:"ISBN (International Standard Book Number) uniquely identifies books."},
+{q:"Which metadata standard is XML-based for digital library objects?",opts:["METS ✅","MARC","ONIX","SKOS"],exp:"METS (Metadata Encoding & Transmission Standard) uses XML for digital library objects."},
+{q:"Which metadata standard is maintained by the Federal Geographic Data Committee?",opts:["CSDGM ✅","MODS","TEI","CDWA"],exp:"CSDGM (Content Standard for Digital Geospatial Metadata) is FGDC’s standard."},
+{q:"Which metadata standard is designed for scientific datasets about species occurrences?",opts:["Darwin Core ✅","ONIX","Dublin Core","TEI"],exp:"Darwin Core focuses on biodiversity and species-occurrence datasets."},
+{q:"Which metadata standard is used by the book industry for product information?",opts:["ONIX ✅","EAD","MARC","IEEE LOM"],exp:"ONIX (Online Information eXchange) is the publishing-industry standard."},
+{q:"Which metadata standard is used for encoding humanities texts?",opts:["TEI ✅","MODS","ONIX","Darwin Core"],exp:"TEI (Text Encoding Initiative) is designed for humanities, social sciences, linguistics."},
+{q:"Which metadata standard is a MARC-compatible bibliographic schema?",opts:["MODS ✅","EAD","TEI","ONIX"],exp:"MODS (Metadata Object Description Schema) is a simpler MARC-like schema."},
+{q:"Which metadata standard is for describing visual resources and their images?",opts:["VRA Core ✅","MODS","ONIX","TEI"],exp:"VRA Core describes works of visual culture and their images."},
+{q:"Which metadata standard supports the semantic web with simple knowledge structures?",opts:["SKOS ✅","ONIX","MARC","EAD"],exp:"SKOS (Simple Knowledge Organisation System) supports semantic-web vocabularies."},
+{q:"Which metadata principle emphasises controlled vocabularies for what/where/when/who?",opts:["Principle 3 ✅","Principle 1","Principle 4","Principle 6"],exp:"Principle 3: use standard controlled vocabularies to reflect content facets."},
+{q:"Which metadata principle insists on clear terms-of-use statements?",opts:["Principle 4 ✅","Principle 2","Principle 5","Principle 1"],exp:"Principle 4: metadata must include clear conditions and terms of use."},
+{q:"Which metadata principle supports long-term management and archiving?",opts:["Principle 6 ✅","Principle 2","Principle 3","Principle 4"],exp:"Principle 6: good metadata supports the long-term management of digital objects."},
+{q:"Which metadata principle states metadata records should themselves be archivable?",opts:["Principle 5 ✅","Principle 1","Principle 3","Principle 6"],exp:"Principle 5: metadata records are objects needing persistence & unique IDs."},
+{q:"Which metadata principle ensures metadata is appropriate to users and intended use?",opts:["Principle 1 ✅","Principle 2","Principle 4","Principle 6"],exp:"Principle 1: appropriateness to materials, users, and intended use."}
+];
+
+/* ------------ interactive script ------------ */
+let idx = 0;
+const qNum = document.getElementById('qNum');
+const stem = document.getElementById('stem');
+const opts = document.getElementById('opts');
+const feedback = document.getElementById('feedback');
+const emoji = document.getElementById('emoji');
+const exp = document.getElementById('exp');
+
+function renderQ() {
+  const item = bank[idx];
+  qNum.textContent = `Question ${idx + 1} of ${bank.length}`;
+  stem.textContent = item.q.replace(' ✅','');
+  opts.innerHTML = '';
+  feedback.classList.add('hidden');
+
+  item.opts.forEach((opt,i)=>{
+    const label = document.createElement('label');
+    label.style.display='block';label.style.margin='6px 0';
+    const radio = document.createElement('input');
+    radio.type='radio'; radio.name='opt'; radio.value=i;
+    radio.addEventListener('change',()=>checkAnswer(i));
+    label.appendChild(radio);
+    const txt = opt.replace(' ✅','');
+    label.append(txt);
+    opts.appendChild(label);
+  });
+}
+
+function checkAnswer(chosen) {
+  const item = bank[idx];
+  const correct = item.opts.findIndex(o=>o.includes('✅'));
+  const right = chosen === correct;
+  emoji.textContent = right ? '🏆' : '👶';
+  let html = right ? '<strong>Correct!</strong><br>' : '<strong>Not quite.</strong><br>';
+  const labels = opts.querySelectorAll('label');
+  labels[correct].className = 'rightOpt';
+  html += item.exp;
+  exp.innerHTML = html;
+  feedback.classList.remove('hidden');
+  opts.querySelectorAll('input').forEach(r=>r.disabled=true);
+}
+
+function nextQ() {
+  idx++;
+  if (idx < bank.length) renderQ();
+  else {
+    qNum.textContent = 'All done!';
+    stem.textContent = '🎉 You have completed the 150-question LIBS 894 – Information Retrieval quiz.';
+    opts.innerHTML = '';
+    feedback.classList.add('hidden');
+  }
+}
+
+renderQ();
+</script>
+</body>
+</html>
